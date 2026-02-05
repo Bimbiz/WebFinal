@@ -1,16 +1,27 @@
 const Review = require("../models/Review");
+const Game = require("../models/Game");
 
 exports.createReview = async (req, res) => {
     try {
-        const { gameTitle, rating, comment } = req.body;
+        const { gameId, rating, comment } = req.body;
 
-        if (!gameTitle || !rating || !comment) {
+        if (!gameId || !rating || !comment) {
             return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const game = await Game.findById(gameId);
+        if (!game) {
+            return res.status(404).json({ message: "Game not found" });
+        }
+
+        const alreadyReviewed = await Review.findOne({ user: req.user._id, game: gameId });
+        if (alreadyReviewed) {
+            return res.status(400).json({ message: "You have already reviewed this game" });
         }
 
         const review = await Review.create({
             user: req.user._id,
-            gameTitle,
+            game: gameId,
             rating,
             comment,
         });
@@ -66,7 +77,7 @@ exports.deleteReview = async (req, res) => {
             return res.status(401).json({ message: "Not authorized" });
         }
 
-        await review.remove();
+        await review.deleteOne();
         res.json({ message: "Review removed" });
 
     } catch (error) {

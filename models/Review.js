@@ -7,15 +7,16 @@ const reviewSchema = mongoose.Schema(
             required: true,
             ref: "User",
         },
-        gameTitle: {
-            type: String,
+        game: {
+            type: mongoose.Schema.Types.ObjectId,
             required: true,
+            ref: "Game",
         },
         rating: {
             type: Number,
             required: true,
             min: 1,
-            max: 5,
+            max: 10,
         },
         comment: {
             type: String,

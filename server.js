@@ -5,6 +5,9 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const gameRoutes = require("./routes/gameRoutes");
+const developerRoutes = require("./routes/developerRoutes");
+
 
 connectDB();
 
@@ -16,6 +19,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/games", gameRoutes);
+app.use("/api/developers", developerRoutes);
 
 app.get("/", (req, res) => {
     res.send("Gaming API is running...");
