@@ -51,6 +51,12 @@ exports.updateGame = async (req, res) => {
 
 exports.getGames = async (req, res) => {
     try {
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = Math.min(parseInt(req.query.limit) || 5, 20);
+        const skip = (page - 1) * limit;
+
+
         let sortOption = {createdAt: -1};
 
         if (req.query.sortBy === "releaseDate") {
@@ -61,8 +67,20 @@ exports.getGames = async (req, res) => {
             sortOption = { releaseDate: 1, createdAt: -1 };
         }
 
-        const games = await Game.find().populate('developer', 'name').sort(sortOption);
-        res.json(games);
+        const totalGames = await Game.countDocuments();
+
+        const games = await Game.find()
+            .populate("developer", "name")
+            .sort(sortOption)
+            .skip(skip)
+            .limit(limit);
+
+        res.json({
+            totalGames, 
+            currentPage: page, 
+            totalPages: Math.ceil(totalGames / limit), 
+            games,
+        });
 
     } catch (error) {
         res.status(500).json({ message: error.message });

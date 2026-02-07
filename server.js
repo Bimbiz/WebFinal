@@ -7,6 +7,7 @@ const userRoutes = require("./routes/userRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const gameRoutes = require("./routes/gameRoutes");
 const developerRoutes = require("./routes/developerRoutes");
+const newsRoutes = require("./routes/newsRoutes");
 
 
 connectDB();
@@ -21,6 +22,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/games", gameRoutes);
 app.use("/api/developers", developerRoutes);
+app.use("/api/news", newsRoutes);
 
 app.get("/", (req, res) => {
     res.send("Gaming API is running...");
