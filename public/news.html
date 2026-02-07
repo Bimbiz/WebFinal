@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Gaming News</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📰 Gaming News</h1>
+
+<button onclick="loadNews()">Load News</button>
+
+<div id="news"></div>
+
+</div>
+
+
+<script>
+
+async function loadNews(){
+
+const res = await fetch("http://localhost:5000/api/news");
+const data = await res.json();
+
+const newsDiv = document.getElementById("news");
+newsDiv.innerHTML="";
+
+const articles = data.articles || data.data || data.results || [];
+
+articles.forEach(article => {
+
+
+newsDiv.innerHTML+=`
+<div class="card">
+<h3>${article.title}</h3>
+<p>${article.source}</p>
+<a href="${article.url}" target="_blank">Read more</a>
+</div>
+`;
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

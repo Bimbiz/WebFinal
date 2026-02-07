@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Auth Demo</h1>
+
+<div class="card">
+<h2>Register</h2>
+
+<input id="regEmail" placeholder="Email">
+<input id="regPass" placeholder="Password">
+
+<button onclick="register()">Register</button>
+</div>
+
+
+<div class="card">
+<h2>Login</h2>
+
+<input id="logEmail" placeholder="Email">
+<input id="logPass" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p id="token"></p>
+
+</div>
+
+</div>
+
+
+<script>
+
+async function register(){
+
+await fetch("http://localhost:5000/api/auth/register",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+email:regEmail.value,
+password:regPass.value
+})
+});
+
+alert("Registered!");
+}
+
+async function login(){
+
+const res = await fetch("http://localhost:5000/api/auth/login",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+email:logEmail.value,
+password:logPass.value
+})
+});
+
+const data = await res.json();
+
+document.getElementById("token").innerText =
+"JWT: " + data.token;
+
+}
+
+</script>
+
+</body>
+</html>

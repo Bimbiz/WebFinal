@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const path = require("path");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
@@ -23,6 +24,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/games", gameRoutes);
 app.use("/api/developers", developerRoutes);
 app.use("/api/news", newsRoutes);
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
     res.send("Gaming API is running...");
