@@ -1,76 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-<title>Login</title>
-<link rel="stylesheet" href="style.css">
-</head>
+  <head>
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
+    <div style="margin-bottom: 20px">
+      <a href="index.html">Games</a> | <a href="news.html">News</a> |
+      <a href="login.html">Login</a>
+    </div>
+    <div class="container">
+      <h1>Auth Demo</h1>
 
-<div class="container">
+      <div class="card">
+        <h2>Register</h2>
 
-<h1>Auth Demo</h1>
+        <input id="regEmail" placeholder="Email" />
+        <input id="regPass" placeholder="Password" />
 
-<div class="card">
-<h2>Register</h2>
+        <button onclick="register()">Register</button>
+      </div>
 
-<input id="regEmail" placeholder="Email">
-<input id="regPass" placeholder="Password">
+      <div class="card">
+        <h2>Login</h2>
 
-<button onclick="register()">Register</button>
-</div>
+        <input id="logEmail" placeholder="Email" />
+        <input id="logPass" placeholder="Password" />
 
+        <button onclick="login()">Login</button>
 
-<div class="card">
-<h2>Login</h2>
+        <p id="token"></p>
+      </div>
+    </div>
 
-<input id="logEmail" placeholder="Email">
-<input id="logPass" placeholder="Password">
+    <script>
+      async function register() {
+        await fetch("http://localhost:5000/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: regEmail.value,
+            password: regPass.value,
+          }),
+        });
 
-<button onclick="login()">Login</button>
+        alert("Registered!");
+      }
 
-<p id="token"></p>
+      async function login() {
+        const res = await fetch("http://localhost:5000/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: logEmail.value,
+            password: logPass.value,
+          }),
+        });
 
-</div>
+        const data = await res.json();
 
-</div>
-
-
-<script>
-
-async function register(){
-
-await fetch("http://localhost:5000/api/auth/register",{
-method:"POST",
-headers:{ "Content-Type":"application/json" },
-body:JSON.stringify({
-email:regEmail.value,
-password:regPass.value
-})
-});
-
-alert("Registered!");
-}
-
-async function login(){
-
-const res = await fetch("http://localhost:5000/api/auth/login",{
-method:"POST",
-headers:{ "Content-Type":"application/json" },
-body:JSON.stringify({
-email:logEmail.value,
-password:logPass.value
-})
-});
-
-const data = await res.json();
-
-document.getElementById("token").innerText =
-"JWT: " + data.token;
-
-}
-
-</script>
-
-</body>
+        document.getElementById("token").innerText = "JWT: " + data.token;
+      }
+    </script>
+  </body>
 </html>

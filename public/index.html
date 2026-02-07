@@ -1,65 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-<title>Gaming Library</title>
-<link rel="stylesheet" href="style.css">
-</head>
+  <head>
+    <title>Gaming Library</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
+    <div style="margin-bottom: 20px">
+      <a href="index.html">Games</a> | <a href="news.html">News</a> |
+      <a href="login.html">Login</a>
+    </div>
+    <div class="container">
+      <h1>Gaming Library</h1>
 
-<div class="container">
+      <a href="login.html">Login</a> |
+      <a href="news.html">Gaming News</a>
 
-<h1>🎮 Gaming Library</h1>
+      <div class="card">
+        <h2>Add Game</h2>
 
-<a href="login.html">Login</a> |
-<a href="news.html">Gaming News</a>
+        <input id="title" placeholder="Title" />
+        <input id="score" placeholder="User Score" />
+        <input id="developer" placeholder="Developer ID" />
 
-<div class="card">
-<h2>Add Game</h2>
+        <button onclick="addGame()">Add</button>
+      </div>
 
-<input id="title" placeholder="Title">
-<input id="score" placeholder="User Score">
-<input id="developer" placeholder="Developer ID">
+      <div class="card">
+        <h2>Sort</h2>
 
-<button onclick="addGame()">Add</button>
-</div>
+        <select onchange="loadGames(this.value)">
+          <option value="">Newest</option>
+          <option value="releaseDate">Release Date</option>
+          <option value="old">Oldest</option>
+        </select>
+      </div>
 
+      <div id="games"></div>
+    </div>
 
-<div class="card">
-<h2>Sort</h2>
+    <script>
+      async function loadGames(sort = "") {
+        let url = "http://localhost:5000/api/games";
 
-<select onchange="loadGames(this.value)">
-<option value="">Newest</option>
-<option value="releaseDate">Release Date</option>
-<option value="old">Oldest</option>
-</select>
+        if (sort) {
+          url += `?sortBy=${sort}`;
+        }
 
-</div>
+        const res = await fetch(url);
+        const data = await res.json();
 
-<div id="games"></div>
+        const gamesDiv = document.getElementById("games");
+        gamesDiv.innerHTML = "";
 
-</div>
-
-
-<script>
-
-async function loadGames(sort=""){
-
-let url = "http://localhost:5000/api/games";
-
-if(sort){
-    url += `?sortBy=${sort}`;
-}
-
-const res = await fetch(url);
-const data = await res.json();
-
-const gamesDiv = document.getElementById("games");
-gamesDiv.innerHTML="";
-
-data.games.forEach(game=>{
-
-gamesDiv.innerHTML += `
+        data.games.forEach((game) => {
+          gamesDiv.innerHTML += `
 <div class="card">
 <h3>${game.title}</h3>
 <p>Score: ${game.userScore}</p>
@@ -68,39 +63,34 @@ gamesDiv.innerHTML += `
 <button onclick="deleteGame('${game._id}')">Delete</button>
 </div>
 `;
+        });
+      }
 
-});
-}
+      async function addGame() {
+        await fetch("http://localhost:5000/api/games", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: document.getElementById("title").value,
+            userScore: document.getElementById("score").value,
+            developer: document.getElementById("developer").value,
+          }),
+        });
 
-async function addGame(){
+        loadGames();
+      }
 
-await fetch("http://localhost:5000/api/games",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-title:document.getElementById("title").value,
-userScore:document.getElementById("score").value,
-developer:document.getElementById("developer").value
-})
-});
+      async function deleteGame(id) {
+        await fetch(`http://localhost:5000/api/games/${id}`, {
+          method: "DELETE",
+        });
 
-loadGames();
-}
+        loadGames();
+      }
 
-async function deleteGame(id){
-
-await fetch(`http://localhost:5000/api/games/${id}`,{
-method:"DELETE"
-});
-
-loadGames();
-}
-
-loadGames();
-
-</script>
-
-</body>
+      loadGames();
+    </script>
+  </body>
 </html>

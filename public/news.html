@@ -1,51 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-<title>Gaming News</title>
-<link rel="stylesheet" href="style.css">
-</head>
+  <head>
+    <title>Gaming News</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
+    <div style="margin-bottom: 20px">
+      <a href="index.html">Games</a> | <a href="news.html">News</a> |
+      <a href="login.html">Login</a>
+    </div>
+    <div class="container">
+      <h1>Gaming News</h1>
 
-<div class="container">
+      <input id="search" placeholder="Search gaming news..." />
+      <button id="searchBtn" onclick="loadNews()">Search</button>
 
-<h1>📰 Gaming News</h1>
+      <div id="news"></div>
+    </div>
 
-<button onclick="loadNews()">Load News</button>
+    <script>
+      async function loadNews() {
+        const newsDiv = document.getElementById("news");
 
-<div id="news"></div>
+        try {
+          newsDiv.innerHTML = "<p>Loading...</p>";
 
-</div>
+          const query = document.getElementById("search")?.value || "";
 
+          let url = "http://localhost:5000/api/news";
 
-<script>
+          if (query) {
+            url += `?search=${encodeURIComponent(query)}`;
+          }
 
-async function loadNews(){
+          const res = await fetch(url);
 
-const res = await fetch("http://localhost:5000/api/news");
-const data = await res.json();
+          if (!res.ok) {
+            throw new Error("Server error: " + res.status);
+          }
 
-const newsDiv = document.getElementById("news");
-newsDiv.innerHTML="";
+          const data = await res.json();
 
-const articles = data.articles || data.data || data.results || [];
+          console.log(data);
 
-articles.forEach(article => {
+          const articles = data.articles || data.data || data.results || [];
 
+          newsDiv.innerHTML = "";
 
-newsDiv.innerHTML+=`
-<div class="card">
-<h3>${article.title}</h3>
-<p>${article.source}</p>
-<a href="${article.url}" target="_blank">Read more</a>
-</div>
-`;
+          if (articles.length === 0) {
+            newsDiv.innerHTML = "<p>No news found.</p>";
+            return;
+          }
 
-});
+          articles.forEach((article) => {
+            newsDiv.innerHTML += `
+        <div class="card">
+            <h3>${article.title || "No title"}</h3>
+            <p>${article.source?.name || ""}</p>
+            <a href="${article.url}" target="_blank">Read more</a>
+        </div>
+      `;
+          });
+        } catch (err) {
+          console.error(err);
 
-}
+          newsDiv.innerHTML = `
+      <p style="color:red;">
+        Failed to load news. Check backend.
+      </p>
+    `;
+        }
+      }
 
-</script>
-
-</body>
+      loadNews();
+    </script>
+  </body>
 </html>
