@@ -51,8 +51,18 @@ exports.updateGame = async (req, res) => {
 
 exports.getGames = async (req, res) => {
     try {
-        const games = (await Game.find().populate('developer', 'name')).toSorted({ releaseDate: -1 });
+        let sortOption = {};
+        if (req.query.sortBy === "releaseDate") {
+            sortOption = { releaseDate: -1 };
+        } else if (req.query.sortBy === "old") {
+            sortOption = { releaseDate: 1 };
+        } else {
+            sortOption = { createdAt: -1 }; // Default sorting by creation date
+        }
+
+        const games = await Game.find().populate('developer', 'name').sort(sortOption);
         res.json(games);
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
