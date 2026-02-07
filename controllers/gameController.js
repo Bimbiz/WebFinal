@@ -51,13 +51,14 @@ exports.updateGame = async (req, res) => {
 
 exports.getGames = async (req, res) => {
     try {
-        let sortOption = {};
+        let sortOption = {createdAt: -1};
+
         if (req.query.sortBy === "releaseDate") {
-            sortOption = { releaseDate: -1 };
-        } else if (req.query.sortBy === "old") {
-            sortOption = { releaseDate: 1 };
-        } else {
-            sortOption = { createdAt: -1 }; // Default sorting by creation date
+            sortOption = { releaseDate: -1, createdAt: -1 };
+        }
+
+        if (req.query.sortBy === "old") {
+            sortOption = { releaseDate: 1, createdAt: -1 };
         }
 
         const games = await Game.find().populate('developer', 'name').sort(sortOption);
