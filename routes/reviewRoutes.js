@@ -3,17 +3,16 @@ const router = express.Router();
 const protect = require("../middleware/authMiddleware");
 
 const {
-    createReview,
-    getReviews,
-    updateReview,
-    deleteReview 
+  createReview,
+  getReviews,
+  updateReview,
+  deleteReview,
 } = require("../controllers/reviewController");
 
 router.post("/", protect, createReview);
-router.get("/", protect, getReviews);
+router.get("/:gameId", getReviews);
 router.put("/:id", protect, updateReview);
-router.delete("/:id", protect, deleteReview); 
+router.delete("/:id", protect, deleteReview);
 console.log(createReview);
-
 
 module.exports = router;

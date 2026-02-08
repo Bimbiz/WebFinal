@@ -1,78 +1,136 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>Gaming News</title>
+    <meta charset="UTF-8" />
+    <title>GameVault | News</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      :root {
+        --primary: #00d4ff;
+        --bg: #121212;
+        --card-bg: #1a1a1a;
+        --text: #eee;
+      }
+      body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #1f1f1f;
+        padding: 15px 25px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid var(--primary);
+      }
+      .nav-bar a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .news-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+      }
+      .news-card {
+        background: var(--card-bg);
+        border: 1px solid #333;
+        padding: 20px;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        transition: 0.3s;
+      }
+      .news-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        box-shadow: 0 5px 15px rgba(0, 212, 255, 0.1);
+      }
+      .news-card h3 {
+        color: var(--primary);
+        margin: 0 0 10px 0;
+        font-size: 1.2rem;
+      }
+      .news-card p {
+        font-size: 0.9rem;
+        color: #ccc;
+        flex-grow: 1;
+        line-height: 1.5;
+      }
+      .read-more {
+        display: block;
+        margin-top: 15px;
+        padding: 10px;
+        background: var(--primary);
+        color: black;
+        text-decoration: none;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: bold;
+      }
+    </style>
   </head>
-
   <body>
-    <div style="margin-bottom: 20px">
-      <a href="index.html">Games</a> | <a href="news.html">News</a> |
-      <a href="login.html">Login</a>
-    </div>
     <div class="container">
-      <h1>Gaming News</h1>
-
-      <input id="search" placeholder="Search gaming news..." />
-      <button id="searchBtn" onclick="loadNews()">Search</button>
-
-      <div id="news"></div>
+      <header class="nav-bar">
+        <h2 style="margin: 0">🌍 Gaming News</h2>
+        <nav>
+          <a href="index.html">🏠 Library</a>
+          <button
+            onclick="loadNews()"
+            style="
+              margin-left: 15px;
+              background: none;
+              border: 1px solid var(--primary);
+              color: var(--primary);
+              padding: 5px 10px;
+              border-radius: 5px;
+              cursor: pointer;
+            "
+          >
+            Refresh
+          </button>
+        </nav>
+      </header>
+      <div id="status" style="text-align: center"></div>
+      <div id="news" class="news-grid"></div>
     </div>
-
+    <script src="config/config.js"></script>
     <script>
       async function loadNews() {
         const newsDiv = document.getElementById("news");
-
+        const status = document.getElementById("status");
         try {
-          newsDiv.innerHTML = "<p>Loading...</p>";
-
-          const query = document.getElementById("search")?.value || "";
-
-          let url = "http://localhost:5000/api/news";
-
-          if (query) {
-            url += `?search=${encodeURIComponent(query)}`;
-          }
-
-          const res = await fetch(url);
-
-          if (!res.ok) {
-            throw new Error("Server error: " + res.status);
-          }
-
-          const data = await res.json();
-
-          console.log(data);
-
-          const articles = data.articles || data.data || data.results || [];
-
+          status.innerHTML = "Fetching latest updates...";
+          const data = await apiRequest("/api/news");
+          const articles = data.results || data.articles || [];
+          status.innerHTML = articles.length ? "" : "No news available.";
           newsDiv.innerHTML = "";
-
-          if (articles.length === 0) {
-            newsDiv.innerHTML = "<p>No news found.</p>";
-            return;
-          }
-
-          articles.forEach((article) => {
+          articles.forEach((a) => {
+            if (!a.title) return;
             newsDiv.innerHTML += `
-        <div class="card">
-            <h3>${article.title || "No title"}</h3>
-            <p>${article.source?.name || ""}</p>
-            <a href="${article.url}" target="_blank">Read more</a>
-        </div>
-      `;
+                        <div class="news-card">
+                            <small style="color:#666">${new Date().toLocaleDateString()}</small>
+                            <h3>${a.title}</h3>
+                            <p>${a.description || "No description available."}</p>
+                            <a href="${a.url}" target="_blank" class="read-more">Read Full Story</a>
+                        </div>`;
           });
         } catch (err) {
-          console.error(err);
-
-          newsDiv.innerHTML = `
-      <p style="color:red;">
-        Failed to load news. Check backend.
-      </p>
-    `;
+          status.innerHTML = "Error loading news.";
         }
       }
-
       loadNews();
     </script>
   </body>

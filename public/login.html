@@ -1,66 +1,123 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>Login</title>
+    <title>GameVault | Auth</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        background: #121212;
+        color: white;
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .auth-box {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .card {
+        background: #1a1a1a;
+        padding: 30px;
+        border-radius: 12px;
+        width: 320px;
+        border: 1px solid #333;
+      }
+      h2 {
+        color: #00d4ff;
+        text-align: center;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        background: #222;
+        border: 1px solid #444;
+        color: white;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #00d4ff;
+        border: none;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .logout-btn {
+        background: #333;
+        color: #777;
+        margin-top: 10px;
+      }
+    </style>
   </head>
-
   <body>
-    <div style="margin-bottom: 20px">
-      <a href="index.html">Games</a> | <a href="news.html">News</a> |
-      <a href="login.html">Login</a>
-    </div>
-    <div class="container">
-      <h1>Auth Demo</h1>
-
+    <div class="auth-box">
       <div class="card">
-        <h2>Register</h2>
-
+        <h2>Sign Up</h2>
+        <input id="regName" placeholder="Username" />
         <input id="regEmail" placeholder="Email" />
-        <input id="regPass" placeholder="Password" />
-
-        <button onclick="register()">Register</button>
+        <input id="regPass" type="password" placeholder="Password" />
+        <button onclick="register()">Create Account</button>
       </div>
-
       <div class="card">
-        <h2>Login</h2>
-
+        <h2>Sign In</h2>
         <input id="logEmail" placeholder="Email" />
-        <input id="logPass" placeholder="Password" />
-
+        <input id="logPass" type="password" placeholder="Password" />
         <button onclick="login()">Login</button>
-
-        <p id="token"></p>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+        <a
+          href="index.html"
+          style="
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #555;
+            text-decoration: none;
+          "
+          >← Back</a
+        >
       </div>
     </div>
-
+    <script src="config/config.js"></script>
     <script>
       async function register() {
-        await fetch("http://localhost:5000/api/auth/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: regEmail.value,
-            password: regPass.value,
-          }),
-        });
-
-        alert("Registered!");
+        const username = document.getElementById("regName").value;
+        const email = document.getElementById("regEmail").value;
+        const password = document.getElementById("regPass").value;
+        try {
+          await apiRequest("/api/auth/register", {
+            method: "POST",
+            body: JSON.stringify({ username, email, password }),
+          });
+          alert("Account created!");
+        } catch (err) {
+          alert(err.message);
+        }
       }
-
       async function login() {
-        const res = await fetch("http://localhost:5000/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: logEmail.value,
-            password: logPass.value,
-          }),
-        });
-
-        const data = await res.json();
-
-        document.getElementById("token").innerText = "JWT: " + data.token;
+        const email = document.getElementById("logEmail").value;
+        const password = document.getElementById("logPass").value;
+        try {
+          const data = await apiRequest("/api/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ email, password }),
+          });
+          setToken(data.token);
+          window.location.href = "index.html";
+        } catch (err) {
+          alert("Invalid credentials");
+        }
+      }
+      function logout() {
+        clearToken();
+        alert("Logged out");
       }
     </script>
   </body>

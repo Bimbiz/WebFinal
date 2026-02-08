@@ -2,17 +2,16 @@ const axios = require("axios");
 
 exports.getGamingNews = async (req, res) => {
   try {
-    const search =
-      req.query.search || '"video game" -casino -betting -gambling';
+    const searchQuery =
+      'video games OR "gaming industry" OR "playstation" OR "xbox" OR "nintendo" -casino -betting';
 
     const response = await axios.get(
       "https://api.apitube.io/v1/news/everything",
       {
         params: {
-          query: search,
+          query: searchQuery,
           language: "en",
-          sort_by: "published_at",
-          per_page: 10,
+          per_page: 15,
         },
         headers: {
           Authorization: `Bearer ${process.env.APITUBE_API_KEY}`,
@@ -22,11 +21,6 @@ exports.getGamingNews = async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      message: "Failed to fetch gaming news",
-      error: error.message,
-    });
+    res.status(500).json({ message: "API Error", error: error.message });
   }
 };

@@ -29,3 +29,34 @@ select {
   margin: 5px 0;
   width: 100%;
 }
+
+textarea {
+  padding: 8px;
+  margin: 5px 0;
+  width: 100%;
+  min-height: 90px;
+}
+
+pre {
+  background: #f7f7f7;
+  padding: 10px;
+  border-radius: 8px;
+  overflow: auto;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hint {
+  color: #555;
+  font-size: 0.9rem;
+}
