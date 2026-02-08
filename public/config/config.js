@@ -1,7 +1,5 @@
 function getApiBase() {
-  return (
-    localStorage.getItem("apiBaseUrl") || "https://webfinal-h0k5.onrender.com"
-  );
+  return localStorage.getItem("apiBaseUrl") || "http://localhost:5000";
 }
 
 function setApiBase(url) {
